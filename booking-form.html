@@ -1,0 +1,2700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Your Service - One-Time Care</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant:wght@300;400;500;600&family=Cormorant+Unicase:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Base Styles */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        /* Remove tap highlight on mobile */
+        * {
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+        }
+        
+        body { 
+            font-family: 'Cormorant', serif; 
+            background: linear-gradient(135deg, #1A1614 0%, #2A1F1C 100%);
+            color: #3A2A27; 
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Progress Indicator */
+        .progress-container {
+            max-width: 800px;
+            margin: 0 auto 5px auto;
+            padding: 0 20px;
+            position: sticky;
+            top: 0;
+            background: linear-gradient(135deg, #1A1614 0%, #2A1F1C 100%);
+            z-index: 100;
+            padding-top: 20px;
+            padding-bottom: 10px;
+            margin-top: 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .progress-bar {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin-bottom: 10px;
+        }
+        
+        .progress-bar::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #E8D5D8;
+            z-index: 1;
+        }
+        
+        .progress-fill {
+            position: absolute;
+            top: 20px;
+            left: 0;
+            height: 2px;
+            background: #B59197;
+            z-index: 2;
+            transition: width 0.3s ease;
+        }
+        
+        .progress-step {
+            position: relative;
+            z-index: 3;
+            text-align: center;
+            flex: 1;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .progress-step-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #F5EFE7 0%, #FAF7F5 100%);
+            border: 2px solid #E8D5D8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 8px auto;
+            font-weight: 600;
+            color: #C8A2A9;
+            transition: all 0.3s ease;
+        }
+        
+        .progress-step.active .progress-step-circle {
+            background: #B59197;
+            color: white;
+            border-color: #C8A2A9;
+        }
+        
+        .progress-step.completed .progress-step-circle {
+            background: #81C784;
+            border-color: #81C784;
+            color: white;
+        }
+        
+        .progress-step-label {
+            font-family: 'Cormorant', serif;
+            font-size: 0.85em;
+            color: #F5EFE7;
+            font-weight: 500;
+        }
+        
+        .progress-step.active .progress-step-label {
+            color: #C8A2A9;
+            font-weight: 600;
+        }
+
+        /* Page Header */
+        .page-header {
+            max-width: 800px;
+            margin: 40px auto 20px auto;
+            padding: 0 20px;
+            text-align: center;
+        }
+        
+        .page-title {
+            font-family: 'Cormorant Unicase', serif;
+            color: #C8A2A9;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+        
+        .page-intro {
+            font-family: 'Cormorant', serif;
+            color: #F5EFE7;
+            font-size: 1.15em;
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+
+        /* Form Container */
+        .booking-section {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 20px;
+            padding-bottom: 60px;
+        }
+
+        .booking-form-card {
+            background: linear-gradient(135deg, #F5EFE7 0%, #FAF7F5 100%);
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(181, 145, 151, 0.15);
+            border: 2px solid #E8D5D8;
+            padding: 40px;
+            margin-bottom: 40px;
+        }
+
+        /* Form Steps */
+        .form-step {
+            display: none;
+        }
+        
+        .form-step.active {
+            display: block;
+        }
+
+        /* Form Sections */
+        .form-section {
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            font-family: 'Cormorant Unicase', serif;
+            color: #C8A2A9;
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #F5EFE7;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            color: #3A2A27;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 1.05em;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .required {
+            color: #C8A2A9;
+            margin-left: 4px;
+        }
+        
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="date"],
+        input[type="time"],
+        input[type="number"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #E8D5D8;
+            border-radius: 8px;
+            font-family: 'Cormorant', serif;
+            font-size: 1em;
+            color: #3A2A27;
+            background: linear-gradient(135deg, #F5EFE7 0%, #FAF7F5 100%);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            -webkit-appearance: none;
+            appearance: none;
+            caret-color: #C8A2A9;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #C8A2A9;
+            box-shadow: 0 0 0 3px rgba(181, 145, 151, 0.1);
+        }
+        
+        @media (max-width: 768px) {
+            input[type="text"],
+            input[type="email"],
+            input[type="tel"],
+            input[type="date"],
+            input[type="time"],
+            input[type="number"],
+            textarea {
+                font-size: 16px;
+            }
+            
+            select {
+                font-size: 16px;
+            }
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        /* Radio and Checkbox Groups */
+        .checkbox-group, .radio-group {
+            background: rgba(181, 145, 151, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #E8D5D8;
+        }
+        
+        .checkbox-item, .radio-item {
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            border-radius: 6px;
+            transition: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .checkbox-item:active, .radio-item:active {
+            background: rgba(181, 145, 151, 0.15);
+        }
+        
+        .checkbox-item:last-child, .radio-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .checkbox-item input[type="checkbox"],
+        .radio-item input[type="radio"] {
+            width: auto;
+            margin-right: 10px;
+            cursor: pointer;
+            min-width: 18px;
+            min-height: 18px;
+        }
+        
+        .checkbox-item label,
+        .radio-item label {
+            margin-bottom: 0;
+            font-weight: 500;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        /* Helper Text */
+        .helper-text {
+            font-size: 0.9em;
+            color: #6B5953;
+            margin-top: 5px;
+            font-style: italic;
+        }
+        
+        /* Links */
+        a {
+            -webkit-tap-highlight-color: transparent;
+            transition: opacity 0.2s ease;
+        }
+        
+        a:active {
+            opacity: 0.7;
+        }
+
+        /* Highlight Boxes */
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(181, 145, 151, 0.1) 0%, rgba(181, 145, 151, 0.05) 100%);
+            border: 2px solid #B59197;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .highlight-box h3 {
+            font-family: 'Cormorant Unicase', serif;
+            color: #C8A2A9;
+            font-size: 1.3em;
+            margin-bottom: 10px;
+        }
+        
+        .highlight-box p {
+            color: #6B5D58;
+            line-height: 1.7;
+        }
+
+        /* Navigation Buttons */
+        .form-navigation {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #E8D5D8;
+        }
+        
+        .nav-button {
+            flex: 1;
+            padding: 14px 24px;
+            border: 2px solid #B59197;
+            border-radius: 8px;
+            font-family: 'Cormorant Unicase', serif;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: none;
+            background: linear-gradient(135deg, #F5EFE7 0%, #FAF7F5 100%);
+            color: #C8A2A9;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .nav-button:hover:not(:disabled) {
+            background: rgba(181, 145, 151, 0.08);
+            transform: translateY(-1px);
+        }
+        
+        .nav-button:active:not(:disabled) {
+            background: rgba(181, 145, 151, 0.2);
+            transform: translateY(0);
+        }
+        
+        .nav-button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+        
+        .nav-button.primary {
+            background: linear-gradient(135deg, #B59197 0%, #A37F85 100%);
+            color: white;
+            border-color: #C8A2A9;
+        }
+        
+        .nav-button.primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(181, 145, 151, 0.3);
+        }
+        
+        .nav-button.primary:active:not(:disabled) {
+            transform: translateY(0);
+            box-shadow: 0 1px 4px rgba(181, 145, 151, 0.3);
+            filter: brightness(0.95);
+        }
+
+        /* Calendar Styles */
+        .calendar-header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #E8D5D8;
+        }
+        .calendar-header button {
+            background: #B59197;
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Cormorant', serif;
+            font-size: 0.9em;
+            min-width: 44px;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .calendar-header button:hover {
+            background: #A37F85;
+        }
+        .calendar-header button:focus {
+            outline: 2px solid #B59197;
+            outline-offset: 2px;
+        }
+        .calendar-header h3 {
+            font-family: 'Cormorant Unicase', serif;
+            color: #C8A2A9;
+            margin: 0;
+            font-size: 1.1em;
+            min-width: 150px;
+            text-align: center;
+        }
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            max-width: 320px;
+            margin: 0 auto;
+        }
+        .calendar-day-header {
+            text-align: center;
+            font-weight: 600;
+            color: #C8A2A9;
+            padding: 6px 2px;
+            font-size: 0.75em;
+        }
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #E8D5D8;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: linear-gradient(135deg, #F5EFE7 0%, #FAF7F5 100%);
+            font-family: 'Cormorant', serif;
+            font-size: 0.9em;
+            min-height: 44px;
+        }
+        .calendar-day:hover:not(.disabled):not(.other-month) {
+            background: #C9A5AC;
+            border-color: #C8A2A9;
+            transform: scale(1.05);
+            color: white;
+        }
+        .calendar-day:focus {
+            outline: 2px solid #B59197;
+            outline-offset: 2px;
+        }
+        .calendar-day.selected {
+            background: #B59197;
+            color: white;
+            font-weight: 600;
+            border-color: #C8A2A9;
+        }
+        .calendar-day.disabled {
+            color: #ccc;
+            cursor: not-allowed;
+            background: #f5f5f5;
+        }
+        .calendar-day.other-month {
+            color: #ccc;
+        }
+        
+        .date-input-group {
+            background: rgba(181, 145, 151, 0.05);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #E8D5D8;
+        }
+
+        /* Validation Errors */
+        .error-message {
+            background: #FFEBEE;
+            border: 2px solid #EF5350;
+            color: #C62828;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            display: none;
+        }
+        
+        .error-message.show {
+            display: block;
+        }
+        
+        .error-list {
+            margin: 10px 0 0 0;
+            padding-left: 20px;
+        }
+        
+        .error-list li {
+            margin: 5px 0;
+        }
+        
+        .field-error {
+            border-color: #EF5350 !important;
+            box-shadow: 0 0 0 3px rgba(239, 83, 80, 0.1) !important;
+        }
+
+        /* Success Message */
+        .success-message {
+            display: none;
+            background: linear-gradient(135deg, #B59197 0%, #A37F85 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 12px;
+            text-align: center;
+            margin: 20px;
+        }
+        
+        .success-message h2 {
+            font-family: 'Cormorant Unicase', serif;
+            font-size: 2.2em;
+            margin-bottom: 15px;
+        }
+        
+        .success-message p {
+            font-size: 1.2em;
+            line-height: 1.8;
+        }
+        
+        .success-box {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.3);
+            padding: 25px;
+            border-radius: 10px;
+            margin: 25px 0;
+        }
+
+        /* Expandable Summary Sections */
+        .summary-section {
+            margin-bottom: 20px;
+        }
+        
+        .summary-header {
+            background: linear-gradient(135deg, #F5EFE7 0%, #FAF7F5 100%);
+            padding: 20px;
+            border-radius: 8px;
+            border: 2px solid #E8D5D8;
+            cursor: pointer;
+            transition: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .summary-header:hover {
+            background: rgba(181, 145, 151, 0.06);
+            border-color: #C8A2A9;
+        }
+        
+        .summary-header:active {
+            background: rgba(181, 145, 151, 0.15);
+            border-color: #C8A2A9;
+        }
+        
+        .summary-header.expanded {
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+            border-bottom: none;
+        }
+        
+        .summary-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex: 1;
+        }
+        
+        .summary-total-label {
+            font-family: 'Cormorant Unicase', serif;
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #3A2A27;
+        }
+        
+        .summary-total-amount {
+            font-size: 1.4em;
+            font-weight: 700;
+            color: #C8A2A9;
+        }
+        
+        .summary-total-amount.discount {
+            color: #2E7D32;
+        }
+        
+        .expand-icon {
+            margin-left: 15px;
+            font-size: 1.2em;
+            color: #C8A2A9;
+            transition: transform 0.2s ease;
+        }
+        
+        .summary-header.expanded .expand-icon {
+            transform: rotate(180deg);
+        }
+        
+        .summary-details {
+            background: linear-gradient(135deg, #F5EFE7 0%, #FAF7F5 100%);
+            border: 2px solid #E8D5D8;
+            border-top: none;
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+            padding: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.2s ease, padding 0.2s ease;
+        }
+        
+        .summary-details.expanded {
+            max-height: 2000px;
+            padding: 20px;
+            padding-top: 15px;
+        }
+        
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 8px 0;
+        }
+        
+        .detail-row.subtotal {
+            border-top: 1px solid #E8D5D8;
+            padding-top: 12px;
+            margin-top: 8px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .form-row { 
+                grid-template-columns: 1fr; 
+            }
+            .page-title { 
+                font-size: 2em; 
+            }
+            .booking-form-card {
+                padding: 25px;
+            }
+            .progress-step-label {
+                font-size: 0.75em;
+            }
+            
+            .calendar-grid {
+                max-width: 100%;
+                width: 100%;
+                gap: 1px;
+            }
+            .calendar-day {
+                font-size: 0.75em;
+                min-height: 36px;
+                padding: 1px;
+            }
+            .calendar-day-header {
+                font-size: 0.65em;
+                padding: 3px 1px;
+            }
+            .calendar-header {
+                gap: 8px;
+            }
+            .calendar-header h3 {
+                font-size: 0.9em;
+                min-width: 100px;
+            }
+            .calendar-header button {
+                padding: 6px 10px;
+                font-size: 0.8em;
+                min-width: 36px;
+                min-height: 36px;
+            }
+            .date-input-group {
+                padding: 15px;
+            }
+            
+            .service-overview-section > div {
+                padding: 15px !important;
+            }
+            
+            .service-overview-section div[style*="display: flex"] {
+                display: block !important;
+            }
+            
+            .service-overview-section div[style*="display: flex"] span {
+                display: block !important;
+                width: 100% !important;
+                text-align: left !important;
+                white-space: normal !important;
+                word-wrap: break-word !important;
+            }
+            
+            .service-overview-section div[style*="display: flex"] span:first-child {
+                margin-bottom: 6px;
+            }
+            
+            .service-overview-section div[style*="display: flex"] span:last-child {
+                padding-left: 15px;
+                color: #6B5D58;
+            }
+        }
+        
+        @media (max-width: 400px) {
+            .calendar-grid {
+                gap: 0px;
+            }
+            .calendar-day {
+                font-size: 0.7em;
+                min-height: 32px;
+            }
+            .calendar-day-header {
+                font-size: 0.6em;
+            }
+            .calendar-header h3 {
+                font-size: 0.85em;
+                min-width: 90px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-header">
+        <h1 class="page-title">One-Time & Vacation Care</h1>
+        <div style="background: rgba(245, 239, 231, 0.15); border: 2px solid rgba(200, 162, 169, 0.3); padding: 15px 20px; border-radius: 8px; margin: 0 auto; max-width: 600px;">
+            <p class="page-intro" style="margin: 0;">Perfect for most of your care needs - single visits, multiple day bookings, or vacation coverage</p>
+        </div>
+    </div>
+
+    <div class="progress-container">
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+            <div class="progress-step active" data-step="1">
+                <div class="progress-step-circle">1</div>
+                <div class="progress-step-label">Contact</div>
+            </div>
+            <div class="progress-step" data-step="2">
+                <div class="progress-step-circle">2</div>
+                <div class="progress-step-label">Client Status</div>
+            </div>
+            <div class="progress-step" data-step="3">
+                <div class="progress-step-circle">3</div>
+                <div class="progress-step-label">Service & Schedule</div>
+            </div>
+            <div class="progress-step" data-step="4">
+                <div class="progress-step-circle">4</div>
+                <div class="progress-step-label">Pet Info</div>
+            </div>
+            <div class="progress-step" data-step="5">
+                <div class="progress-step-circle">5</div>
+                <div class="progress-step-label">Payment</div>
+            </div>
+            <div class="progress-step" data-step="6">
+                <div class="progress-step-circle">6</div>
+                <div class="progress-step-label">Review</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="booking-section">
+        <div class="error-message" id="validationErrors">
+            <strong>Please correct the following:</strong>
+            <ul class="error-list" id="errorList"></ul>
+        </div>
+    </div>
+
+    <div class="success-message" id="successMessage">
+        <h2>Request Received!</h2>
+        <p style="font-size: 1.2em; margin-bottom: 20px;">Thank you for your one-time booking request</p>
+        
+        <div class="success-box">
+            <p style="font-size: 1.1em; margin-bottom: 10px;"><strong>Next Steps:</strong></p>
+            <p>We'll review your request and contact you within 24 hours to confirm availability and finalize details.</p>
+        </div>
+        
+        <p style="margin-top: 20px;">Questions? Call or text: (859) 346-0605</p>
+    </div>
+
+    <div class="booking-section" id="bookingFormContainer">
+        <div class="booking-form-card">
+            <form id="bookingForm">
+                <input type="hidden" name="_subject" value="New One-Time/Vacation Booking Request">
+                <input type="hidden" name="form_type" value="One-Time/Vacation">
+                <input type="text" name="_gotcha" style="display:none" tabindex="-1" autocomplete="off">
+
+                <!-- STEP 1: Contact Information -->
+                <div class="form-step active" data-step="1">
+                    <div class="form-section">
+                        <h2 class="section-title">Contact Information</h2>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>First Name <span class="required">*</span></label>
+                                <input type="text" name="firstName" id="firstName" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Last Name <span class="required">*</span></label>
+                                <input type="text" name="lastName" id="lastName" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>How would you prefer we contact you? <span class="required">*</span></label>
+                            <p class="helper-text" style="margin-bottom: 12px;">We'll use this method to send booking confirmations and updates</p>
+                            <div class="radio-group">
+                                <div class="radio-item">
+                                    <input type="radio" id="contactText" name="contactMethod" value="text" required onchange="updateContactFields()">
+                                    <label for="contactText">Text Message</label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" id="contactEmail" name="contactMethod" value="email" onchange="updateContactFields()">
+                                    <label for="contactEmail">Email</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label id="emailLabel">Email</label>
+                                <input type="email" name="email" id="email">
+                            </div>
+                            <div class="form-group">
+                                <label id="phoneLabel">Phone Number</label>
+                                <input type="tel" name="phone" id="phone">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Street Address <span class="required">*</span></label>
+                            <input type="text" name="address" id="address" required>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>City <span class="required">*</span></label>
+                                <input type="text" name="city" id="city" required>
+                            </div>
+                            <div class="form-group">
+                                <label>ZIP Code <span class="required">*</span></label>
+                                <input type="text" name="zip" id="zip" required>
+                            </div>
+                            
+                            <div id="cashappVenmoInfo" style="display: none; background: rgba(200, 162, 169, 0.1); border: 1px solid #E8D5D8; padding: 15px; border-radius: 8px; margin-top: 15px;">
+                                <p style="color: #3A2A27; margin: 0 0 10px 0;">
+                                    <strong style="color: #C8A2A9;">CashApp:</strong> <span style="font-weight: 600;">$myreliacare</span>
+                                </p>
+                                <p style="color: #3A2A27; margin: 0;">
+                                    <strong style="color: #C8A2A9;">Venmo:</strong> <span style="font-weight: 600;">@myreliacare</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-navigation">
+                        <button type="button" class="nav-button" disabled>Back</button>
+                        <button type="button" class="nav-button primary" onclick="nextStep()">Next</button>
+                    </div>
+                </div>
+
+                <!-- STEP 2: Client Status -->
+                <div class="form-step" data-step="2">
+                    <div class="form-section">
+                        <h2 class="section-title">Client Status</h2>
+                        <div class="form-group">
+                            <label>Are you a new or returning client? <span class="required">*</span></label>
+                            <div class="radio-group">
+                                <div class="radio-item">
+                                    <input type="radio" id="newClient" name="clientStatus" value="new" required onchange="handleClientStatus()">
+                                    <label for="newClient">New Client</label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" id="returningClient" name="clientStatus" value="returning" onchange="handleClientStatus()">
+                                    <label for="returningClient">Returning Client</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="newClientOptions" style="display: none;">
+                            <div class="highlight-box">
+                                <h3>Welcome! Choose Your New Client Option:</h3>
+                                <div class="form-group" style="margin-top: 15px;">
+                                    <div class="radio-group">
+                                        <div class="radio-item">
+                                            <input type="radio" id="meetGreet" name="newClientOption" value="meet-greet" onchange="handleNewClientOption()">
+                                            <label for="meetGreet">Free Meet & Greet (20-minute intro, no commitment)</label>
+                                        </div>
+                                        <div class="radio-item">
+                                            <input type="radio" id="discount" name="newClientOption" value="10-percent-off" onchange="handleNewClientOption()">
+                                            <label for="discount">15% Off First Day of Services</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div id="meetGreetScheduling" style="display: none; margin-top: 20px; background: rgba(181, 145, 151, 0.05); padding: 20px; border-radius: 8px; border: 1px solid #E8D5D8;">
+                                <h3 style="color: #C8A2A9; font-family: 'Cormorant Unicase', serif; font-size: 1.3em; margin-bottom: 15px;">Schedule Your Meet & Greet</h3>
+                                
+                                <div class="form-group">
+                                    <label for="meetGreetTimes">When are you available? <span class="required">*</span></label>
+                                    <textarea name="meetGreetTimes" id="meetGreetTimes" rows="3" placeholder="Please provide a few date/time options that work for you"></textarea>
+                                    <p class="helper-text">We offer meet & greets daily, 9am-9pm (subject to availability)</p>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="meetGreetAttendees">Who can we expect to meet? <span class="required">*</span></label>
+                                    <textarea id="meetGreetAttendees" name="meetGreetAttendees" rows="3" placeholder="List all people & pets that will be present"></textarea>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="meetGreetNotes">Anything we should know before we arrive?</label>
+                                    <textarea id="meetGreetNotes" name="meetGreetNotes" rows="3" placeholder="Examples: park across the street, knock when you arrive, dogs can be protective of our home, gate code, etc."></textarea>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label>Would you like to book services now? <span class="required">*</span></label>
+                                    <div class="radio-group">
+                                        <div class="radio-item">
+                                            <input type="radio" id="bookAfterYes" name="bookAfterMeetGreet" value="yes" onchange="handleBookAfter()">
+                                            <label for="bookAfterYes">Yes, I'd like to set up services now</label>
+                                        </div>
+                                        <div class="radio-item">
+                                            <input type="radio" id="bookAfterNo" name="bookAfterMeetGreet" value="no" onchange="handleBookAfter()">
+                                            <label for="bookAfterNo">No, just the meet & greet for now</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div id="cashappVenmoInfo" style="display: none; background: rgba(200, 162, 169, 0.1); border: 1px solid #E8D5D8; padding: 15px; border-radius: 8px; margin-top: 15px;">
+                                <p style="color: #3A2A27; margin: 0 0 10px 0;">
+                                    <strong style="color: #C8A2A9;">CashApp:</strong> <span style="font-weight: 600;">$myreliacare</span>
+                                </p>
+                                <p style="color: #3A2A27; margin: 0;">
+                                    <strong style="color: #C8A2A9;">Venmo:</strong> <span style="font-weight: 600;">@myreliacare</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-navigation">
+                        <button type="button" class="nav-button" onclick="prevStep()">Back</button>
+                        <button type="button" class="nav-button primary" onclick="nextStep()">Next</button>
+                    </div>
+                </div>
+                <!-- STEP 3: Service Details & Schedule -->
+                <div class="form-step" data-step="3">
+                    <div class="form-section">
+                        <h2 class="section-title">Service Details</h2>
+                        
+                        <div class="form-group">
+                            <label>Primary Service <span class="required">*</span></label>
+                            <select name="primaryService" id="primaryService" required onchange="handleService()">
+                                <option value="">Select your primary service...</option>
+                                <option value="drop-in-pet-visit">Drop-in Pet Visit - $23-$57</option>
+                                <option value="stand-alone-pet-reset-cleaning">Stand Alone Pet Reset Cleaning - $85</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group" id="durationGroup" style="display: none;">
+                            <label>Visit Duration <span class="required">*</span></label>
+                            <select name="duration" id="duration">
+                                <option value="">Select duration...</option>
+                                <option value="30min">30 minutes - $23</option>
+                                <option value="1hr">1 hour - $32</option>
+                                <option value="90min">90 minutes - $45</option>
+                                <option value="2hr">2 hours - $57</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h2 class="section-title">Service Schedule</h2>
+                        
+                        <div class="form-group">
+                            <label>Booking Type <span class="required">*</span></label>
+                            <select id="bookingType" name="bookingType" required onchange="handleBookingType()">
+                                <option value="">Select...</option>
+                                <option value="single">Single Day</option>
+                                <option value="multiple">Multiple Days/Vacation Coverage</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Single Day Section -->
+                        <div id="singleDay" style="display: none;">
+                            <div class="date-input-group">
+                                <div class="form-group">
+                                    <label>Select Date <span class="required">*</span></label>
+                                    <div id="calendarSingleDay"></div>
+                                    <div id="selectedSingleDay" style="margin-top: 15px; padding: 15px; background: rgba(181, 145, 151, 0.05); border-radius: 8px; display: none;">
+                                        <strong style="color: #C8A2A9;">Selected:</strong>
+                                        <div id="datesSingleDay" style="margin-top: 8px; color: #6B5D58;"></div>
+                                    </div>
+                                    <input type="hidden" id="singleDate" name="singleDate">
+                                </div>
+                                
+                                <div id="sameDayWarning" style="display: none; background: #FFF4E6; border: 2px solid #FFB84D; padding: 15px; border-radius: 8px; margin: 15px 0;">
+                                    <p style="color: #8B5A00; font-weight: 600; margin-bottom: 8px;">Same-Day Booking Notice</p>
+                                    <p style="color: #6B4500; margin: 0;">You've selected today's date. Please text us at <strong>859-346-0605</strong> after submitting this form so we can confirm availability. Note: We require at least 3 hours advance notice for same-day visits.</p>
+                                </div>
+                                
+                                <div class="form-group" id="singleVisitCountGroup">
+                                    <label for="singleVisitCount">Number of Visits This Day</label>
+                                    <select id="singleVisitCount" name="singleVisitCount" onchange="handleSingleVisits()">
+                                        <option value="">Select...</option>
+                                        <option value="1">1 visit</option>
+                                        <option value="2">2 visits</option>
+                                        <option value="3">3 visits</option>
+                                        <option value="4">4+ visits</option>
+                                    </select>
+                                </div>
+                                
+                                <div id="singleVisitTimes" style="display: none;"></div>
+                            </div>
+                            
+                            <!-- Add-On for Single Day (NO DOG BATHS) -->
+                            <div id="singleDayRegularAddOns" style="margin-top: 25px; padding-top: 25px; border-top: 2px solid #E8D5D8;">
+                                <h3 style="color: #C8A2A9; font-family: 'Cormorant Unicase', serif; font-size: 1.3em; margin-bottom: 15px;">Add-On (Optional)</h3>
+                                <div class="checkbox-group">
+                                    <div class="checkbox-item">
+                                        <input type="checkbox" id="addOnCleaning" name="addOns" value="Add-On Pet Reset Cleaning">
+                                        <label for="addOnCleaning">Add-On Pet Reset Cleaning - $80</label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Weekly Refresh Package Note -->
+                            <div id="weeklyRefreshNote" style="display: none; margin-top: 25px; padding-top: 25px; border-top: 2px solid #E8D5D8;">
+                                <div style="background: linear-gradient(135deg, rgba(181, 145, 151, 0.1) 0%, rgba(181, 145, 151, 0.05) 100%); border: 2px solid #B59197; padding: 20px; border-radius: 10px;">
+                                    <h3 style="color: #C8A2A9; font-family: 'Cormorant Unicase', serif; font-size: 1.3em; margin-bottom: 12px;">Bundle & Save</h3>
+                                    <p style="color: #6B5D58; line-height: 1.7; margin: 0;">Looking for even more convenience? Bundle our poop scoop service with your Weekly Refresh Package and save 10% on yard maintenance. Simply let us know during scheduling if you'd like to add this service!</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Multiple Days Section -->
+                        <div id="multipleDays" style="display: none;">
+                            <div class="date-input-group">
+                                <div class="form-group" id="visitFrequencyQuestion">
+                                    <label>How many visits per day do you need? <span class="required">*</span></label>
+                                    <p class="helper-text" style="margin-bottom: 12px;">Select all that apply. You'll choose which dates get which number of visits.</p>
+                                    <div class="checkbox-group">
+                                        <div class="checkbox-item">
+                                            <input type="checkbox" id="need1Visit" onchange="handleVisitTypeSelection()">
+                                            <label for="need1Visit">1 visit per day</label>
+                                        </div>
+                                        <div class="checkbox-item">
+                                            <input type="checkbox" id="need2Visits" onchange="handleVisitTypeSelection()">
+                                            <label for="need2Visits">2 visits per day</label>
+                                        </div>
+                                        <div class="checkbox-item">
+                                            <input type="checkbox" id="need3Visits" onchange="handleVisitTypeSelection()">
+                                            <label for="need3Visits">3 visits per day</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 1 Visit Per Day -->
+                                <div id="oneVisitSection" style="display: none; margin-top: 20px;">
+                                    <div style="background: linear-gradient(135deg, #F5EFE7 0%, #FAF7F5 100%); padding: 20px; border-radius: 8px; border: 2px solid #B59197; margin-bottom: 15px;">
+                                        <h3 style="color: #C8A2A9; font-family: 'Cormorant Unicase', serif; margin-bottom: 15px;">Select dates for 1 visit per day:</h3>
+                                        <div id="calendar1Visit"></div>
+                                        <div id="selected1Visit" style="margin-top: 15px; padding: 15px; background: rgba(181, 145, 151, 0.05); border-radius: 8px; display: none;">
+                                            <strong style="color: #C8A2A9;">Selected:</strong>
+                                            <div id="dates1Visit" style="margin-top: 8px; color: #6B5D58;"></div>
+                                        </div>
+                                        <input type="hidden" id="dates1VisitHidden" name="dates1Visit">
+                                        
+                                        <div style="margin: 15px 0; background: rgba(181, 145, 151, 0.05); padding: 12px; border-radius: 6px;">
+                                            <label style="display: flex; align-items: center; cursor: pointer; font-weight: 500;">
+                                                <input type="checkbox" id="differentTimes1Visit" onchange="updateTimeSelections('1Visit')" style="margin-right: 8px;">
+                                                I need different times for different dates
+                                            </label>
+                                        </div>
+                                        
+                                        <div id="times1Visit" style="margin-top: 15px;"></div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 2 Visits Per Day -->
+                                <div id="twoVisitsSection" style="display: none; margin-top: 20px;">
+                                    <div style="background: linear-gradient(135deg, #F5EFE7 0%, #FAF7F5 100%); padding: 20px; border-radius: 8px; border: 2px solid #B59197; margin-bottom: 15px;">
+                                        <h3 style="color: #C8A2A9; font-family: 'Cormorant Unicase', serif; margin-bottom: 15px;">Select dates for 2 visits per day:</h3>
+                                        <div id="calendar2Visits"></div>
+                                        <div id="selected2Visits" style="margin-top: 15px; padding: 15px; background: rgba(181, 145, 151, 0.05); border-radius: 8px; display: none;">
+                                            <strong style="color: #C8A2A9;">Selected:</strong>
+                                            <div id="dates2Visits" style="margin-top: 8px; color: #6B5D58;"></div>
+                                        </div>
+                                        <input type="hidden" id="dates2VisitsHidden" name="dates2Visits">
+                                        
+                                        <div style="margin: 15px 0; background: rgba(181, 145, 151, 0.05); padding: 12px; border-radius: 6px;">
+                                            <label style="display: flex; align-items: center; cursor: pointer; font-weight: 500;">
+                                                <input type="checkbox" id="differentTimes2Visits" onchange="updateTimeSelections('2Visits')" style="margin-right: 8px;">
+                                                I need different times for different dates
+                                            </label>
+                                        </div>
+                                        
+                                        <div id="times2Visits" style="margin-top: 15px;"></div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 3 Visits Per Day -->
+                                <div id="threeVisitsSection" style="display: none; margin-top: 20px;">
+                                    <div style="background: linear-gradient(135deg, #F5EFE7 0%, #FAF7F5 100%); padding: 20px; border-radius: 8px; border: 2px solid #B59197; margin-bottom: 15px;">
+                                        <h3 style="color: #C8A2A9; font-family: 'Cormorant Unicase', serif; margin-bottom: 15px;">Select dates for 3 visits per day:</h3>
+                                        <div id="calendar3Visits"></div>
+                                        <div id="selected3Visits" style="margin-top: 15px; padding: 15px; background: rgba(181, 145, 151, 0.05); border-radius: 8px; display: none;">
+                                            <strong style="color: #C8A2A9;">Selected:</strong>
+                                            <div id="dates3Visits" style="margin-top: 8px; color: #6B5D58;"></div>
+                                        </div>
+                                        <input type="hidden" id="dates3VisitsHidden" name="dates3Visits">
+                                        
+                                        <div style="margin: 15px 0; background: rgba(181, 145, 151, 0.05); padding: 12px; border-radius: 6px;">
+                                            <label style="display: flex; align-items: center; cursor: pointer; font-weight: 500;">
+                                                <input type="checkbox" id="differentTimes3Visits" onchange="updateTimeSelections('3Visits')" style="margin-right: 8px;">
+                                                I need different times for different dates
+                                            </label>
+                                        </div>
+                                        
+                                        <div id="times3Visits" style="margin-top: 15px;"></div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Add-On for Multiple Days (NO DOG BATHS) -->
+                                <div id="multipleDaysAddOns" style="margin-top: 25px; padding-top: 25px; border-top: 2px solid #E8D5D8;">
+                                    <h3 style="color: #C8A2A9; font-family: 'Cormorant Unicase', serif; font-size: 1.3em; margin-bottom: 15px;">Add-On (Optional)</h3>
+                                    <p class="helper-text" style="margin-bottom: 15px;">Select if you'd like to include this add-on. You'll choose specific dates below.</p>
+                                    <div class="checkbox-group">
+                                        <div class="checkbox-item">
+                                            <input type="checkbox" id="addOnCleaningMultiple" name="addOns" value="Add-On Pet Reset Cleaning" onchange="handleAddOnScheduling()">
+                                            <label for="addOnCleaningMultiple">Add-On Pet Reset Cleaning - $80 per cleaning</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Weekly Refresh Package Note for Multiple Days -->
+                                <div id="weeklyRefreshNoteMultiple" style="display: none; margin-top: 25px; padding-top: 25px; border-top: 2px solid #E8D5D8;">
+                                    <div style="background: linear-gradient(135deg, rgba(181, 145, 151, 0.1) 0%, rgba(181, 145, 151, 0.05) 100%); border: 2px solid #B59197; padding: 20px; border-radius: 10px;">
+                                        <h3 style="color: #C8A2A9; font-family: 'Cormorant Unicase', serif; font-size: 1.3em; margin-bottom: 12px;">Bundle & Save</h3>
+                                        <p style="color: #6B5D58; line-height: 1.7; margin: 0;">Looking for even more convenience? Bundle our poop scoop service with your Weekly Refresh Package and save 10% on yard maintenance. Simply let us know during scheduling if you'd like to add this service!</p>
+                                    </div>
+                                </div>
+                                
+                                <div id="addOnScheduling" style="display: none; margin-top: 20px;"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- First Day Add-On for New Clients with Discount (NO DOG BATHS) -->
+                        <div id="firstDayAddOns" style="display: none; margin-top: 30px; padding-top: 30px; border-top: 2px solid #E8D5D8;">
+                            <div class="highlight-box">
+                                <h3>Maximize Your New Client Discount!</h3>
+                                <p style="margin-bottom: 15px;">Would you like to include this add-on on your first day of service to take advantage of your 15% new client discount?</p>
+                                <div class="checkbox-group">
+                                    <div class="checkbox-item">
+                                        <input type="checkbox" id="firstDayCleaning" name="firstDayAddOns" value="Pet Reset Cleaning">
+                                        <label for="firstDayCleaning">Pet Reset Cleaning on First Day - <span style="text-decoration: line-through; color: #6B5953;">$80</span> <span style="color: #2E7D32; font-weight: 600;">$68</span></label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div id="cashappVenmoInfo" style="display: none; background: rgba(200, 162, 169, 0.1); border: 1px solid #E8D5D8; padding: 15px; border-radius: 8px; margin-top: 15px;">
+                                <p style="color: #3A2A27; margin: 0 0 10px 0;">
+                                    <strong style="color: #C8A2A9;">CashApp:</strong> <span style="font-weight: 600;">$myreliacare</span>
+                                </p>
+                                <p style="color: #3A2A27; margin: 0;">
+                                    <strong style="color: #C8A2A9;">Venmo:</strong> <span style="font-weight: 600;">@myreliacare</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-navigation">
+                        <button type="button" class="nav-button" onclick="prevStep()">Back</button>
+                        <button type="button" class="nav-button primary" onclick="nextStep()">Next</button>
+                    </div>
+                </div>
+                <!-- STEP 4: Pet Information -->
+                <div class="form-step" data-step="4">
+                    <div class="form-section">
+                        <h2 class="section-title">Pet Information</h2>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Number of Dogs</label>
+                                <input type="number" name="numDogs" id="numDogs" min="0" value="0">
+                                <p class="helper-text">First 2 dogs included in drop-in visits. Each additional dog is $5 per visit.</p>
+                            </div>
+                            <div class="form-group">
+                                <label>Number of Cats</label>
+                                <input type="number" name="numCats" id="numCats" min="0" value="0">
+                                <p class="helper-text">All cats included in base price.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Pet Names & Breeds <span class="required">*</span></label>
+                            <textarea name="petDetails" id="petDetails" required placeholder="Please list your pets' names and breeds (e.g., Max - Golden Retriever, Luna - Siamese Cat)"></textarea>
+                            <p class="helper-text">We'll send a detailed pet information form once your booking is confirmed</p>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h2 class="section-title">Additional Information</h2>
+                        
+                        <div class="form-group">
+                            <label>Special Notes or Questions</label>
+                            <textarea name="specialNotes" id="specialNotes" placeholder="Any questions for us or special notes about your needs? We're here to help!"></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>How did you hear about us?</label>
+                            <select name="referralSource" id="referralSource" onchange="handleReferralSource()">
+                                <option value="">Please select</option>
+                                <option value="Friend/Family">Friend or Family Member</option>
+                                <option value="Magazine">Magazine</option>
+                                <option value="Podcast">Podcast</option>
+                                <option value="Google">Google Search</option>
+                                <option value="Facebook">Facebook</option>
+                                <option value="Instagram">Instagram</option>
+                                <option value="Nextdoor">Nextdoor</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            
+                            <div id="referralNameField" style="display: none; margin-top: 15px;">
+                                <label for="referralFirstName">Who referred you?</label>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <input type="text" id="referralFirstName" name="referralFirstName" placeholder="First name">
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="text" id="referralLastInitial" name="referralLastInitial" placeholder="Last initial" maxlength="1" style="text-transform: uppercase;">
+                                    </div>
+                                </div>
+                                <p class="helper-text">If you name one of our current clients, they'll receive a special thank-you discount on their next service!</p>
+                            </div>
+                            
+                            <div id="cashappVenmoInfo" style="display: none; background: rgba(200, 162, 169, 0.1); border: 1px solid #E8D5D8; padding: 15px; border-radius: 8px; margin-top: 15px;">
+                                <p style="color: #3A2A27; margin: 0 0 10px 0;">
+                                    <strong style="color: #C8A2A9;">CashApp:</strong> <span style="font-weight: 600;">$myreliacare</span>
+                                </p>
+                                <p style="color: #3A2A27; margin: 0;">
+                                    <strong style="color: #C8A2A9;">Venmo:</strong> <span style="font-weight: 600;">@myreliacare</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-navigation">
+                        <button type="button" class="nav-button" onclick="prevStep()">Back</button>
+                        <button type="button" class="nav-button primary" onclick="nextStep()">Next</button>
+                    </div>
+                </div>
+
+                <!-- STEP 5: Payment Preferences -->
+                <div class="form-step" data-step="5">
+                    <div class="form-section">
+                        <h2 class="section-title">Payment Preferences</h2>
+                        
+                        <div style="background: rgba(200, 162, 169, 0.15); border-left: 4px solid #C8A2A9; padding: 15px; border-radius: 4px; margin-bottom: 20px;">
+                            <p style="color: #3A2A27; margin: 0; line-height: 1.6;">
+                                <strong>Note:</strong> We'll send you an invoice after your booking is confirmed with all available payment options included.
+                            </p>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Preferred Payment Method <span class="required">*</span></label>
+                            <div class="radio-group">
+                                <div class="radio-item">
+                                    <input type="radio" id="onlineBillPay" name="paymentMethod" value="online-bill-pay" required>
+                                    <label for="onlineBillPay">Online Bill Pay</label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" id="cashapp" name="paymentMethod" value="cashapp">
+                                    <label for="cashapp">CashApp</label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" id="venmo" name="paymentMethod" value="venmo">
+                                    <label for="venmo">Venmo</label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" id="cash" name="paymentMethod" value="cash">
+                                    <label for="cash">Cash (must be home)</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="background: rgba(200, 162, 169, 0.1); border: 1px solid #E8D5D8; padding: 20px; border-radius: 8px; margin-top: 20px;">
+                            <h3 style="color: #C8A2A9; font-family: 'Cormorant Unicase', serif; font-size: 1.2em; margin-bottom: 15px;">Payment Information</h3>
+                            
+                            <div style="margin-bottom: 15px;">
+                                <p style="color: #3A2A27; margin: 0;">
+                                    <strong style="color: #C8A2A9;">Online Bill Pay:</strong> 
+                                    <a href="https://myreliacare.com/online-bill-pay" target="_blank" style="color: #C8A2A9; text-decoration: underline; font-weight: 600;">Online Bill Pay | MyReliaCare - Northern Kentucky Pet Care</a>
+                                </p>
+                            </div>
+                            
+                            <div style="margin-bottom: 15px;">
+                                <p style="color: #3A2A27; margin: 0;">
+                                    <strong style="color: #C8A2A9;">CashApp:</strong> <span style="font-weight: 600;">$myreliacare</span>
+                                </p>
+                            </div>
+                            
+                            <div style="margin-bottom: 15px;">
+                                <p style="color: #3A2A27; margin: 0;">
+                                    <strong style="color: #C8A2A9;">Venmo:</strong> <span style="font-weight: 600;">@myreliacare</span>
+                                </p>
+                            </div>
+                            
+                            <div>
+                                <p style="color: #3A2A27; margin: 0;">
+                                    <strong style="color: #C8A2A9;">Cash:</strong> Payment collected prior to service
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-navigation">
+                        <button type="button" class="nav-button" onclick="prevStep()">Back</button>
+                        <button type="button" class="nav-button primary" onclick="nextStep()">Next</button>
+                    </div>
+                </div>
+
+                <!-- STEP 6: Review & Submit -->
+                <div class="form-step" data-step="6">
+                    <div id="bookingSummary">
+                        <div id="summaryContent"></div>
+                    </div>
+                    
+                    <div class="form-section" style="margin-top: 40px;">
+                        <div class="checkbox-item" style="background: rgba(181, 145, 151, 0.05); padding: 15px; border-radius: 8px; border: 1px solid #E8D5D8; margin-bottom: 15px;">
+                            <input type="checkbox" id="subscribeEmail" name="subscribeEmail" value="yes" style="width: auto; margin-right: 10px;">
+                            <label for="subscribeEmail" style="margin-bottom: 0; font-weight: 500; display: inline;">
+                                Subscribe to our email list for updates and special offers
+                            </label>
+                        </div>
+                        
+                        <div class="checkbox-item" style="background: rgba(181, 145, 151, 0.05); padding: 15px; border-radius: 8px; border: 1px solid #E8D5D8;">
+                            <input type="checkbox" id="termsAccept" name="termsAccept" value="accepted" required style="width: auto; margin-right: 10px;">
+                            <label for="termsAccept" style="margin-bottom: 0; font-weight: 500; display: inline;">
+                                I have reviewed and agree to MyReliaCare's <a href="https://myreliacare.com/terms-%26-privacy" target="_blank" style="color: #C8A2A9; text-decoration: underline; font-weight: 600;">Terms of Service</a> <span class="required">*</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-navigation">
+                        <button type="button" class="nav-button" onclick="prevStep()">Back</button>
+                        <button type="submit" class="nav-button primary">Submit Booking Request</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+<script>
+    let currentStep = 1;
+    const totalSteps = 6;
+
+    const PRICING = {
+        VISIT_30MIN: 23,
+        VISIT_1HR: 32,
+        VISIT_90MIN: 45,
+        VISIT_2HR: 57,
+        CLEANING_ADDON: 80,
+        CLEANING_STANDALONE: 85,
+        WEEKLY_REFRESH: 115,
+        ADDITIONAL_DOG: 5,
+        STATE_TAX_RATE: 0.06,
+        MULTI_SERVICE_DISCOUNT: 0.05,
+        NEW_CLIENT_DISCOUNT: 0.15
+    };
+
+    let calendars = {
+        'SingleDay': { dates: [], month: new Date().getMonth(), year: new Date().getFullYear() },
+        '1Visit': { dates: [], month: new Date().getMonth(), year: new Date().getFullYear() },
+        '2Visits': { dates: [], month: new Date().getMonth(), year: new Date().getFullYear() },
+        '3Visits': { dates: [], month: new Date().getMonth(), year: new Date().getFullYear() }
+    };
+
+    document.addEventListener('DOMContentLoaded', function() {
+        updateProgressIndicator();
+    });
+
+    function toggleSummarySection(sectionId) {
+        const header = document.getElementById(sectionId + '-header');
+        const details = document.getElementById(sectionId + '-details');
+        
+        header.classList.toggle('expanded');
+        details.classList.toggle('expanded');
+    }
+
+    function updateProgressIndicator() {
+        const steps = document.querySelectorAll('.progress-step');
+        const progressFill = document.getElementById('progressFill');
+        
+        steps.forEach((step, index) => {
+            const stepNumber = index + 1;
+            if (stepNumber < currentStep) {
+                step.classList.add('completed');
+                step.classList.remove('active');
+            } else if (stepNumber === currentStep) {
+                step.classList.add('active');
+                step.classList.remove('completed');
+            } else {
+                step.classList.remove('active', 'completed');
+            }
+        });
+        
+        const progress = ((currentStep - 1) / (totalSteps - 1)) * 100;
+        progressFill.style.width = progress + '%';
+    }
+
+    function nextStep() {
+        if (!validateCurrentStep()) {
+            return;
+        }
+        
+        if (currentStep === 2) {
+            const clientStatus = document.querySelector('input[name="clientStatus"]:checked');
+            const newClientOption = document.querySelector('input[name="newClientOption"]:checked');
+            const bookAfter = document.querySelector('input[name="bookAfterMeetGreet"]:checked');
+            
+            if (clientStatus && clientStatus.value === 'new' && 
+                newClientOption && newClientOption.value === 'meet-greet' && 
+                bookAfter && bookAfter.value === 'no') {
+                
+                document.querySelector(`.form-step[data-step="${currentStep}"]`).classList.remove('active');
+                currentStep = 6;
+                document.querySelector(`.form-step[data-step="${currentStep}"]`).classList.add('active');
+                
+                updateProgressIndicator();
+                generateBookingSummary();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                return;
+            }
+        }
+        
+        if (currentStep < totalSteps) {
+            document.querySelector(`.form-step[data-step="${currentStep}"]`).classList.remove('active');
+            currentStep++;
+            document.querySelector(`.form-step[data-step="${currentStep}"]`).classList.add('active');
+            
+            updateProgressIndicator();
+            
+            if (currentStep === 6) {
+                generateBookingSummary();
+            }
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    }
+
+    function prevStep() {
+        if (currentStep > 1) {
+            if (currentStep === 6) {
+                const clientStatus = document.querySelector('input[name="clientStatus"]:checked');
+                const newClientOption = document.querySelector('input[name="newClientOption"]:checked');
+                const bookAfter = document.querySelector('input[name="bookAfterMeetGreet"]:checked');
+                
+                if (clientStatus && clientStatus.value === 'new' && 
+                    newClientOption && newClientOption.value === 'meet-greet' && 
+                    bookAfter && bookAfter.value === 'no') {
+                    
+                    document.querySelector(`.form-step[data-step="${currentStep}"]`).classList.remove('active');
+                    currentStep = 2;
+                    document.querySelector(`.form-step[data-step="${currentStep}"]`).classList.add('active');
+                    
+                    updateProgressIndicator();
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    return;
+                }
+            }
+            
+            document.querySelector(`.form-step[data-step="${currentStep}"]`).classList.remove('active');
+            currentStep--;
+            document.querySelector(`.form-step[data-step="${currentStep}"]`).classList.add('active');
+            
+            updateProgressIndicator();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    }
+
+    function validateCurrentStep() {
+        const currentStepElement = document.querySelector(`.form-step[data-step="${currentStep}"]`);
+        const requiredFields = currentStepElement.querySelectorAll('[required]');
+        const errorList = document.getElementById('errorList');
+        const errorMessage = document.getElementById('validationErrors');
+        let errors = [];
+        
+        errorList.innerHTML = '';
+        errorMessage.classList.remove('show');
+        document.querySelectorAll('.field-error').forEach(field => {
+            field.classList.remove('field-error');
+        });
+        
+        requiredFields.forEach(field => {
+            if (field.type === 'radio') {
+                const radioGroup = currentStepElement.querySelectorAll(`input[name="${field.name}"]`);
+                const isChecked = Array.from(radioGroup).some(radio => radio.checked);
+                if (!isChecked) {
+                    errors.push('Please select an option for: ' + getFieldLabel(field));
+                    radioGroup[0].closest('.radio-group').classList.add('field-error');
+                }
+            } else if (field.type === 'checkbox' && field.required) {
+                if (!field.checked) {
+                    errors.push('Please check: ' + getFieldLabel(field));
+                    field.classList.add('field-error');
+                }
+            } else if (!field.value.trim()) {
+                errors.push('Please fill out: ' + getFieldLabel(field));
+                field.classList.add('field-error');
+            }
+        });
+        
+        if (currentStep === 2) {
+            const clientStatus = document.querySelector('input[name="clientStatus"]:checked');
+            if (clientStatus && clientStatus.value === 'new') {
+                const newClientOption = document.querySelector('input[name="newClientOption"]:checked');
+                if (!newClientOption) {
+                    errors.push('Please select a new client option');
+                } else if (newClientOption.value === 'meet-greet') {
+                    const meetGreetTimes = document.getElementById('meetGreetTimes');
+                    const meetGreetAttendees = document.getElementById('meetGreetAttendees');
+                    const bookAfter = document.querySelector('input[name="bookAfterMeetGreet"]:checked');
+                    
+                    if (!meetGreetTimes.value.trim()) {
+                        errors.push('Please provide your available times for the meet & greet');
+                        meetGreetTimes.classList.add('field-error');
+                    }
+                    if (!meetGreetAttendees.value.trim()) {
+                        errors.push('Please let us know who we can expect to meet');
+                        meetGreetAttendees.classList.add('field-error');
+                    }
+                    if (!bookAfter) {
+                        errors.push('Please indicate if you want to book services now or just the meet & greet');
+                    }
+                }
+            }
+        }
+        
+        if (currentStep === 3) {
+            const clientStatus = document.querySelector('input[name="clientStatus"]:checked');
+            const newClientOption = document.querySelector('input[name="newClientOption"]:checked');
+            const bookAfter = document.querySelector('input[name="bookAfterMeetGreet"]:checked');
+            
+            const isMeetGreetOnly = clientStatus && clientStatus.value === 'new' && 
+                                    newClientOption && newClientOption.value === 'meet-greet' && 
+                                    bookAfter && bookAfter.value === 'no';
+            
+            if (!isMeetGreetOnly) {
+                const bookingType = document.getElementById('bookingType').value;
+                
+                if (!bookingType) {
+                    errors.push('Please select a booking type (Single Day or Multiple Days)');
+                } else if (bookingType === 'single') {
+                    if (calendars['SingleDay'].dates.length === 0) {
+                        errors.push('Please select a date for your service');
+                    }
+                } else if (bookingType === 'multiple') {
+                    const need1 = document.getElementById('need1Visit').checked;
+                    const need2 = document.getElementById('need2Visits').checked;
+                    const need3 = document.getElementById('need3Visits').checked;
+                    
+                    if (!need1 && !need2 && !need3) {
+                        errors.push('Please select at least one visit frequency (1, 2, or 3 visits per day)');
+                    }
+                    
+                    if (need1 && calendars['1Visit'].dates.length === 0) {
+                        errors.push('Please select dates for 1 visit per day');
+                    }
+                    if (need2 && calendars['2Visits'].dates.length === 0) {
+                        errors.push('Please select dates for 2 visits per day');
+                    }
+                    if (need3 && calendars['3Visits'].dates.length === 0) {
+                        errors.push('Please select dates for 3 visits per day');
+                    }
+                }
+            }
+        }
+        
+        if (errors.length > 0) {
+            errors.forEach(error => {
+                const li = document.createElement('li');
+                li.textContent = error;
+                errorList.appendChild(li);
+            });
+            errorMessage.classList.add('show');
+            errorMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return false;
+        }
+        
+        return true;
+    }
+
+    function getFieldLabel(field) {
+        const label = field.closest('.form-group')?.querySelector('label');
+        if (label) {
+            return label.textContent.replace('*', '').trim();
+        }
+        return field.name;
+    }
+
+    function handleClientStatus() {
+        const status = document.querySelector('input[name="clientStatus"]:checked');
+        const newOptions = document.getElementById('newClientOptions');
+        const meetGreetTimes = document.getElementById('meetGreetTimes');
+        const meetGreetAttendees = document.getElementById('meetGreetAttendees');
+        
+        if (!status) return;
+        
+        if (status.value === 'new') {
+            newOptions.style.display = 'block';
+        } else {
+            newOptions.style.display = 'none';
+            document.querySelectorAll('input[name="newClientOption"]').forEach(radio => radio.checked = false);
+            document.getElementById('meetGreetScheduling').style.display = 'none';
+            meetGreetTimes.value = '';
+            meetGreetTimes.required = false;
+            meetGreetAttendees.value = '';
+            meetGreetAttendees.required = false;
+            document.getElementById('meetGreetNotes').value = '';
+            document.querySelectorAll('input[name="bookAfterMeetGreet"]').forEach(radio => radio.checked = false);
+        }
+        
+        updateFirstDayAddOnsVisibility();
+    }
+
+    function handleNewClientOption() {
+        const option = document.querySelector('input[name="newClientOption"]:checked');
+        const meetGreet = document.getElementById('meetGreetScheduling');
+        const meetGreetTimes = document.getElementById('meetGreetTimes');
+        const meetGreetAttendees = document.getElementById('meetGreetAttendees');
+        
+        if (!option) return;
+        
+        if (option.value === 'meet-greet') {
+            meetGreet.style.display = 'block';
+            meetGreetTimes.required = true;
+            meetGreetAttendees.required = true;
+        } else {
+            meetGreet.style.display = 'none';
+            meetGreetTimes.required = false;
+            meetGreetAttendees.required = false;
+            meetGreetTimes.value = '';
+            meetGreetAttendees.value = '';
+            document.getElementById('meetGreetNotes').value = '';
+            document.querySelectorAll('input[name="bookAfterMeetGreet"]').forEach(radio => radio.checked = false);
+        }
+        
+        updateFirstDayAddOnsVisibility();
+    }
+
+    function updateFirstDayAddOnsVisibility() {
+        const clientStatus = document.querySelector('input[name="clientStatus"]:checked');
+        const newClientOption = document.querySelector('input[name="newClientOption"]:checked');
+        const bookingType = document.getElementById('bookingType').value;
+        const primaryService = document.getElementById('primaryService').value;
+        const firstDayAddOns = document.getElementById('firstDayAddOns');
+        const singleDayRegularAddOns = document.getElementById('singleDayRegularAddOns');
+        
+        const isWeeklyRefresh = primaryService === 'weekly-refresh';
+        const isStandAloneCleaning = primaryService === 'stand-alone-pet-reset-cleaning';
+        
+        if (isWeeklyRefresh || isStandAloneCleaning) {
+            if (firstDayAddOns) firstDayAddOns.style.display = 'none';
+            if (singleDayRegularAddOns) singleDayRegularAddOns.style.display = 'none';
+            return;
+        }
+        
+        const isNewClientDiscount = clientStatus && clientStatus.value === 'new' && 
+                                   newClientOption && newClientOption.value === '10-percent-off';
+        
+        let hasSelectedDates = false;
+        if (bookingType === 'single') {
+            hasSelectedDates = calendars['SingleDay'].dates.length > 0;
+            
+            if (isNewClientDiscount && hasSelectedDates) {
+                firstDayAddOns.style.display = 'block';
+                if (singleDayRegularAddOns) singleDayRegularAddOns.style.display = 'none';
+            } else {
+                firstDayAddOns.style.display = 'none';
+                if (singleDayRegularAddOns) singleDayRegularAddOns.style.display = 'block';
+            }
+        } else if (bookingType === 'multiple') {
+            hasSelectedDates = calendars['1Visit'].dates.length > 0 || 
+                              calendars['2Visits'].dates.length > 0 || 
+                              calendars['3Visits'].dates.length > 0;
+            
+            firstDayAddOns.style.display = 'none';
+        }
+        
+        if (firstDayAddOns.style.display === 'none') {
+            document.getElementById('firstDayCleaning').checked = false;
+        }
+        
+        if (singleDayRegularAddOns && singleDayRegularAddOns.style.display === 'none') {
+            const addOnCleaning = document.getElementById('addOnCleaning');
+            if (addOnCleaning) addOnCleaning.checked = false;
+        }
+    }
+
+    function handleBookAfter() {
+    }
+
+    function updateContactFields() {
+        const method = document.querySelector('input[name="contactMethod"]:checked');
+        const email = document.getElementById('email');
+        const phone = document.getElementById('phone');
+        const emailLabel = document.getElementById('emailLabel');
+        const phoneLabel = document.getElementById('phoneLabel');
+        
+        if (method) {
+            if (method.value === 'text') {
+                phone.required = true;
+                email.required = false;
+                phoneLabel.innerHTML = 'Phone Number <span class="required">*</span>';
+                emailLabel.innerHTML = 'Email (optional)';
+            } else {
+                email.required = true;
+                phone.required = false;
+                emailLabel.innerHTML = 'Email <span class="required">*</span>';
+                phoneLabel.innerHTML = 'Phone Number (optional)';
+            }
+        }
+    }
+
+    function updateWeeklyRefreshVisibility() {
+        const primaryService = document.getElementById('primaryService').value;
+        const bookingType = document.getElementById('bookingType').value;
+        const isWeeklyRefresh = primaryService === 'weekly-refresh';
+        const isStandAloneCleaning = primaryService === 'stand-alone-pet-reset-cleaning';
+        
+        const singleDayRegularAddOns = document.getElementById('singleDayRegularAddOns');
+        const weeklyRefreshNote = document.getElementById('weeklyRefreshNote');
+        const multipleDaysAddOns = document.getElementById('multipleDaysAddOns');
+        const weeklyRefreshNoteMultiple = document.getElementById('weeklyRefreshNoteMultiple');
+        const firstDayAddOns = document.getElementById('firstDayAddOns');
+        const singleVisitCountGroup = document.getElementById('singleVisitCountGroup');
+        const singleVisitCount = document.getElementById('singleVisitCount');
+        const visitFrequencyQuestion = document.getElementById('visitFrequencyQuestion');
+        const need1Visit = document.getElementById('need1Visit');
+        
+        if (isWeeklyRefresh || isStandAloneCleaning) {
+            if (bookingType === 'single') {
+                if (singleDayRegularAddOns) singleDayRegularAddOns.style.display = 'none';
+                if (firstDayAddOns) firstDayAddOns.style.display = 'none';
+                if (singleVisitCountGroup) singleVisitCountGroup.style.display = isWeeklyRefresh ? 'none' : 'block';
+                if (singleVisitCount && isWeeklyRefresh) singleVisitCount.value = '1';
+                
+                // Only show Weekly Refresh note for Weekly Refresh, not for standalone cleaning
+                if (weeklyRefreshNote) weeklyRefreshNote.style.display = isWeeklyRefresh ? 'block' : 'none';
+            } else if (bookingType === 'multiple') {
+                if (multipleDaysAddOns) multipleDaysAddOns.style.display = 'none';
+                if (firstDayAddOns) firstDayAddOns.style.display = 'none';
+                if (visitFrequencyQuestion) visitFrequencyQuestion.style.display = isWeeklyRefresh ? 'none' : 'block';
+                
+                // Only show Weekly Refresh note for Weekly Refresh, not for standalone cleaning
+                if (weeklyRefreshNoteMultiple) weeklyRefreshNoteMultiple.style.display = isWeeklyRefresh ? 'block' : 'none';
+                
+                if (isWeeklyRefresh && need1Visit && !need1Visit.checked) {
+                    need1Visit.checked = true;
+                    setTimeout(function() {
+                        try {
+                            handleVisitTypeSelection();
+                        } catch (e) {
+                            console.error('Error in handleVisitTypeSelection:', e);
+                        }
+                    }, 0);
+                }
+            }
+        } else {
+            if (weeklyRefreshNote) weeklyRefreshNote.style.display = 'none';
+            if (weeklyRefreshNoteMultiple) weeklyRefreshNoteMultiple.style.display = 'none';
+            
+            if (bookingType === 'single' && singleVisitCountGroup) {
+                singleVisitCountGroup.style.display = 'block';
+            }
+            
+            if (bookingType === 'multiple' && visitFrequencyQuestion) {
+                visitFrequencyQuestion.style.display = 'block';
+            }
+            
+            if (bookingType === 'single' && singleDayRegularAddOns) {
+            } else if (bookingType === 'multiple' && multipleDaysAddOns) {
+                multipleDaysAddOns.style.display = 'block';
+            }
+        }
+        
+        // Clear add-on checkboxes when they're hidden
+        if (singleDayRegularAddOns && singleDayRegularAddOns.style.display === 'none') {
+            const addOnCleaning = document.getElementById('addOnCleaning');
+            if (addOnCleaning) addOnCleaning.checked = false;
+        }
+        if (multipleDaysAddOns && multipleDaysAddOns.style.display === 'none') {
+            const addOnCleaningMultiple = document.getElementById('addOnCleaningMultiple');
+            if (addOnCleaningMultiple) addOnCleaningMultiple.checked = false;
+        }
+        if (firstDayAddOns && firstDayAddOns.style.display === 'none') {
+            const firstDayCleaning = document.getElementById('firstDayCleaning');
+            if (firstDayCleaning) firstDayCleaning.checked = false;
+        }
+    }
+
+    function handleService() {
+        const service = document.getElementById('primaryService').value;
+        const durationGroup = document.getElementById('durationGroup');
+        const duration = document.getElementById('duration');
+        
+        if (service === 'drop-in-pet-visit') {
+            durationGroup.style.display = 'block';
+            duration.required = true;
+        } else {
+            durationGroup.style.display = 'none';
+            duration.required = false;
+            duration.value = '';
+        }
+        
+        updateWeeklyRefreshVisibility();
+    }
+
+    function handleBookingType() {
+        const type = document.getElementById('bookingType').value;
+        const singleDay = document.getElementById('singleDay');
+        const multipleDays = document.getElementById('multipleDays');
+        const primaryService = document.getElementById('primaryService').value;
+        const isWeeklyRefresh = primaryService === 'weekly-refresh';
+        const singleVisitCountGroup = document.getElementById('singleVisitCountGroup');
+        
+        const cleaningSingle = document.getElementById('addOnCleaning');
+        const cleaningMultiple = document.getElementById('addOnCleaningMultiple');
+        
+        if (type === 'single') {
+            singleDay.style.display = 'block';
+            multipleDays.style.display = 'none';
+            if (cleaningMultiple) cleaningMultiple.checked = false;
+            
+            renderCalendar('SingleDay');
+            
+            if (singleVisitCountGroup) {
+                singleVisitCountGroup.style.display = isWeeklyRefresh ? 'none' : 'block';
+            }
+            
+            updateWeeklyRefreshVisibility();
+        } else if (type === 'multiple') {
+            singleDay.style.display = 'none';
+            multipleDays.style.display = 'block';
+            if (cleaningSingle) cleaningSingle.checked = false;
+            
+            updateWeeklyRefreshVisibility();
+        } else {
+            singleDay.style.display = 'none';
+            multipleDays.style.display = 'none';
+        }
+        
+        updateFirstDayAddOnsVisibility();
+    }
+
+    function handleSingleVisits() {
+        const count = document.getElementById('singleVisitCount').value;
+        const container = document.getElementById('singleVisitTimes');
+        
+        if (!count) {
+            container.style.display = 'none';
+            return;
+        }
+        
+        container.style.display = 'block';
+        let html = '<div style="margin-top: 15px;">';
+        
+        if (count === '1') {
+            html += createTimeSelect('singleVisit1Time', 'Preferred Time:');
+        } else if (count === '2') {
+            html += createTimeSelect('singleVisit1Time', 'Visit 1 - Preferred Time:');
+            html += createTimeSelect('singleVisit2Time', 'Visit 2 - Preferred Time:');
+        } else if (count === '3') {
+            html += createTimeSelect('singleVisit1Time', 'Visit 1 - Preferred Time:');
+            html += createTimeSelect('singleVisit2Time', 'Visit 2 - Preferred Time:');
+            html += createTimeSelect('singleVisit3Time', 'Visit 3 - Preferred Time:');
+        } else {
+            html += '<div class="form-group"><label for="multipleVisitTimesDesc">Preferred Visit Times</label>';
+            html += '<textarea id="multipleVisitTimesDesc" name="multipleVisitTimesDesc" placeholder="Please describe your preferred schedule for 4+ visits"></textarea></div>';
+        }
+        
+        html += '</div>';
+        container.innerHTML = html;
+    }
+
+    function createTimeSelect(name, label) {
+        let options = '<option value="">Select time...</option>';
+        options += '<option value="anytime">Anytime</option>';
+        options += '<option value="morning">Morning (9am-12pm)</option>';
+        options += '<option value="afternoon">Afternoon (12pm-5pm)</option>';
+        options += '<option value="evening">Evening (5pm-9pm)</option>';
+        
+        const times = ['9am-10am', '10am-11am', '11am-12pm', '12pm-1pm', '1pm-2pm', '2pm-3pm', '3pm-4pm', '4pm-5pm', '5pm-6pm', '6pm-7pm', '7pm-8pm', '8pm-9pm'];
+        times.forEach(time => {
+            options += `<option value="${time}">${time}</option>`;
+        });
+        
+        return `<div class="form-group">
+            <label for="${name}">${label}</label>
+            <select id="${name}" name="${name}">${options}</select>
+        </div>`;
+    }
+
+    function handleVisitTypeSelection() {
+        const need1 = document.getElementById('need1Visit').checked;
+        const need2 = document.getElementById('need2Visits').checked;
+        const need3 = document.getElementById('need3Visits').checked;
+        
+        document.getElementById('oneVisitSection').style.display = need1 ? 'block' : 'none';
+        document.getElementById('twoVisitsSection').style.display = need2 ? 'block' : 'none';
+        document.getElementById('threeVisitsSection').style.display = need3 ? 'block' : 'none';
+        
+        if (need1) renderCalendar('1Visit');
+        if (need2) renderCalendar('2Visits');
+        if (need3) renderCalendar('3Visits');
+        
+        handleAddOnScheduling();
+        updateFirstDayAddOnsVisibility();
+        updateWeeklyRefreshVisibility();
+    }
+
+    window.changeMonth = function(calendarId, delta) {
+        const cal = calendars[calendarId];
+        cal.month += delta;
+        if (cal.month > 11) {
+            cal.month = 0;
+            cal.year++;
+        } else if (cal.month < 0) {
+            cal.month = 11;
+            cal.year--;
+        }
+        renderCalendar(calendarId);
+    };
+
+    window.toggleDate = function(calendarId, dateStr) {
+        const cal = calendars[calendarId];
+        const index = cal.dates.indexOf(dateStr);
+        
+        if (calendarId === 'SingleDay') {
+            if (index > -1) {
+                cal.dates.splice(index, 1);
+            } else {
+                cal.dates = [dateStr];
+            }
+            renderCalendar(calendarId);
+            checkSameDayBooking();
+            updateFirstDayAddOnsVisibility();
+            updateWeeklyRefreshVisibility();
+            return;
+        }
+        
+        if (index > -1) {
+            cal.dates.splice(index, 1);
+        } else {
+            cal.dates.push(dateStr);
+        }
+        cal.dates.sort();
+        renderCalendar(calendarId);
+        updateTimeSelections(calendarId);
+        handleAddOnScheduling();
+        updateFirstDayAddOnsVisibility();
+        updateWeeklyRefreshVisibility();
+    };
+
+    function renderCalendar(calendarId) {
+        const calendar = document.getElementById('calendar' + calendarId);
+        if (!calendar) return;
+        
+        const cal = calendars[calendarId];
+        const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+        const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        
+        const firstDay = new Date(cal.year, cal.month, 1);
+        const lastDay = new Date(cal.year, cal.month + 1, 0);
+        const prevLastDay = new Date(cal.year, cal.month, 0);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        let html = '<div class="calendar-header">';
+        html += `<button type="button" onclick="changeMonth('${calendarId}', -1)">←</button>`;
+        html += `<h3>${monthNames[cal.month]} ${cal.year}</h3>`;
+        html += `<button type="button" onclick="changeMonth('${calendarId}', 1)">→</button>`;
+        html += '</div>';
+        
+        html += '<div class="calendar-grid">';
+        
+        for (let day of dayNames) {
+            html += `<div class="calendar-day-header">${day}</div>`;
+        }
+        
+        const firstDayOfWeek = firstDay.getDay();
+        for (let i = firstDayOfWeek - 1; i >= 0; i--) {
+            const day = prevLastDay.getDate() - i;
+            html += `<div class="calendar-day other-month">${day}</div>`;
+        }
+        
+        for (let day = 1; day <= lastDay.getDate(); day++) {
+            const date = new Date(cal.year, cal.month, day);
+            date.setHours(0, 0, 0, 0);
+            const dateStr = date.toISOString().split('T')[0];
+            
+            const isPast = calendarId === 'SingleDay' ? date < today : date <= today;
+            const isSelected = cal.dates.includes(dateStr);
+            
+            let classes = 'calendar-day';
+            if (isPast) classes += ' disabled';
+            if (isSelected) classes += ' selected';
+            
+            if (isPast) {
+                html += `<div class="${classes}">${day}</div>`;
+            } else {
+                html += `<div class="${classes}" onclick="toggleDate('${calendarId}', '${dateStr}')">${day}</div>`;
+            }
+        }
+        
+        const totalCells = firstDayOfWeek + lastDay.getDate();
+        const remainingCells = 7 - (totalCells % 7);
+        if (remainingCells < 7) {
+            for (let i = 1; i <= remainingCells; i++) {
+                html += `<div class="calendar-day other-month">${i}</div>`;
+            }
+        }
+        
+        html += '</div>';
+        calendar.innerHTML = html;
+        updateSelectedDatesDisplay(calendarId);
+    }
+
+    function updateSelectedDatesDisplay(calendarId) {
+        const display = document.getElementById('selected' + calendarId);
+        const datesList = document.getElementById('dates' + calendarId);
+        const hiddenInput = document.getElementById('dates' + calendarId + 'Hidden');
+        const cal = calendars[calendarId];
+        
+        if (calendarId === 'SingleDay') {
+            const singleDateInput = document.getElementById('singleDate');
+            if (cal.dates.length === 0) {
+                display.style.display = 'none';
+                singleDateInput.value = '';
+            } else {
+                display.style.display = 'block';
+                const date = new Date(cal.dates[0] + 'T00:00:00');
+                const formatted = date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+                datesList.textContent = formatted;
+                singleDateInput.value = cal.dates[0];
+            }
+            return;
+        }
+        
+        if (cal.dates.length === 0) {
+            display.style.display = 'none';
+            if (hiddenInput) hiddenInput.value = '';
+        } else {
+            display.style.display = 'block';
+            const formatted = cal.dates.map(d => {
+                const date = new Date(d + 'T00:00:00');
+                return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+            }).join(', ');
+            datesList.textContent = formatted;
+            if (hiddenInput) hiddenInput.value = cal.dates.join(', ');
+        }
+    }
+
+    function checkSameDayBooking() {
+        const cal = calendars['SingleDay'];
+        const warning = document.getElementById('sameDayWarning');
+        
+        if (!cal.dates || cal.dates.length === 0) {
+            warning.style.display = 'none';
+            return false;
+        }
+        
+        const selectedDate = cal.dates[0];
+        const selected = new Date(selectedDate + 'T00:00:00');
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        const isSameDay = selected.getTime() === today.getTime();
+        
+        if (isSameDay) {
+            warning.style.display = 'block';
+        } else {
+            warning.style.display = 'none';
+        }
+        
+        return isSameDay;
+    }
+
+    function updateTimeSelections(calendarId) {
+        const container = document.getElementById('times' + calendarId);
+        if (!container) return;
+        
+        const cal = calendars[calendarId];
+        if (cal.dates.length === 0) {
+            container.innerHTML = '';
+            return;
+        }
+        
+        const visitCount = calendarId.replace('Visit', '').replace('s', '');
+        const checkbox = document.getElementById('differentTimes' + calendarId);
+        
+        let html = '<div style="margin-top: 10px; padding-top: 15px; border-top: 2px solid #E8D5D8;">';
+        html += '<label style="color: #C8A2A9; font-weight: 600; margin-bottom: 10px; display: block;">Preferred Visit Times:</label>';
+        
+        if (!checkbox || !checkbox.checked) {
+            html += `<div id="sameTimes${calendarId}">`;
+            if (visitCount === '1') {
+                html += createTimeSelect('time' + calendarId, 'Visit Time (applies to all selected dates)');
+            } else if (visitCount === '2') {
+                html += createTimeSelect('time' + calendarId + '_1', 'Morning Visit (applies to all dates)');
+                html += createTimeSelect('time' + calendarId + '_2', 'Evening Visit (applies to all dates)');
+            } else if (visitCount === '3') {
+                html += createTimeSelect('time' + calendarId + '_1', 'Morning Visit (applies to all dates)');
+                html += createTimeSelect('time' + calendarId + '_2', 'Midday Visit (applies to all dates)');
+                html += createTimeSelect('time' + calendarId + '_3', 'Evening Visit (applies to all dates)');
+            }
+            html += '</div>';
+        }
+        
+        if (checkbox && checkbox.checked) {
+            html += `<div id="differentTimesSection${calendarId}">`;
+            html += '<div class="form-group">';
+            html += `<label for="differentTimes${calendarId}Text">Please describe which dates need which times:</label>`;
+            html += `<textarea id="differentTimes${calendarId}Text" name="differentTimes${calendarId}" rows="4" placeholder="Example: Nov 1 - 10am, Nov 3 - 2pm, Nov 5 - 6pm"></textarea>`;
+            html += '<p class="helper-text">List each date and its preferred time - we\'ll confirm the exact schedule with you!</p>';
+            html += '</div>';
+            html += '</div>';
+        }
+        
+        html += '</div>';
+        container.innerHTML = html;
+    }
+
+    function handleAddOnScheduling() {
+        const bookingType = document.getElementById('bookingType').value;
+        const addOnContainer = document.getElementById('addOnScheduling');
+        
+        if (bookingType !== 'multiple') {
+            addOnContainer.style.display = 'none';
+            return;
+        }
+        
+        const cleaning = document.getElementById('addOnCleaningMultiple').checked;
+        
+        if (!cleaning) {
+            addOnContainer.style.display = 'none';
+            return;
+        }
+        
+        let allDates = [];
+        if (calendars['1Visit'].dates.length > 0) allDates = allDates.concat(calendars['1Visit'].dates);
+        if (calendars['2Visits'].dates.length > 0) allDates = allDates.concat(calendars['2Visits'].dates);
+        if (calendars['3Visits'].dates.length > 0) allDates = allDates.concat(calendars['3Visits'].dates);
+        
+        allDates = [...new Set(allDates)].sort();
+        
+        if (allDates.length === 0) {
+            addOnContainer.style.display = 'none';
+            return;
+        }
+        
+        const existingCleaningCount = document.getElementById('cleaningCount')?.value || '';
+        
+        const existingCleaningDates = [];
+        const existingCleaningCountNum = parseInt(existingCleaningCount || 0);
+        for (let i = 1; i <= existingCleaningCountNum; i++) {
+            const dateValue = document.getElementById('cleaningDate' + i)?.value || '';
+            existingCleaningDates.push(dateValue);
+        }
+        
+        let html = '<div style="background: rgba(181, 145, 151, 0.05); padding: 20px; border-radius: 8px; border: 1px solid #E8D5D8;">';
+        html += '<h3 style="color: #C8A2A9; font-family: \'Cormorant Unicase\', serif; font-size: 1.3em; margin-bottom: 15px;">Add-On Scheduling</h3>';
+        
+        if (cleaning) {
+            html += '<div class="form-group">';
+            html += '<label for="cleaningCount">How many Pet Reset Cleanings do you want to schedule?</label>';
+            html += '<select id="cleaningCount" onchange="updateCleaningDates()">';
+            html += '<option value="">Select...</option>';
+            for (let i = 1; i <= allDates.length; i++) {
+                const selected = (existingCleaningCount == i) ? ' selected' : '';
+                html += `<option value="${i}"${selected}>${i}</option>`;
+            }
+            html += '</select>';
+            html += '<div id="cleaningDates" style="margin-top: 10px;"></div>';
+            html += '</div>';
+        }
+        
+        html += '</div>';
+        addOnContainer.innerHTML = html;
+        addOnContainer.style.display = 'block';
+        
+        if (existingCleaningCount && cleaning) {
+            updateCleaningDates();
+            setTimeout(() => {
+                for (let i = 0; i < existingCleaningDates.length; i++) {
+                    const dateSelect = document.getElementById('cleaningDate' + (i + 1));
+                    if (dateSelect && existingCleaningDates[i]) {
+                        dateSelect.value = existingCleaningDates[i];
+                    }
+                }
+            }, 10);
+        }
+    }
+
+    window.updateCleaningDates = function() {
+        const count = document.getElementById('cleaningCount').value;
+        const container = document.getElementById('cleaningDates');
+        const allDates = getAllSelectedDates();
+        
+        if (!count || count === '0') {
+            container.innerHTML = '';
+            return;
+        }
+        
+        const clientStatus = document.querySelector('input[name="clientStatus"]:checked');
+        const newClientOption = document.querySelector('input[name="newClientOption"]:checked');
+        const isNewClientDiscount = clientStatus && clientStatus.value === 'new' && 
+                                   newClientOption && newClientOption.value === '10-percent-off';
+        
+        let html = '';
+        
+        if (isNewClientDiscount && allDates.length > 0) {
+            const firstDate = allDates[0];
+            html += '<div style="margin-bottom: 15px; padding: 12px; background: #E8F5E9; border: 1px solid #81C784; border-radius: 6px;">';
+            html += '<p style="margin: 0; color: #1B5E20; font-size: 0.95em;"><strong>New Client Discount:</strong> Any cleaning scheduled for your first day (' + formatDateForDisplay(firstDate) + ') will receive 15% off!</p>';
+            html += '</div>';
+        }
+        
+        for (let i = 1; i <= parseInt(count); i++) {
+            html += '<div class="form-group">';
+            html += `<label for="cleaningDate${i}">Pet Reset Cleaning #${i} - Select Date:</label>`;
+            html += `<select id="cleaningDate${i}" name="cleaningDate${i}" required>`;
+            html += '<option value="">Choose a date...</option>';
+            allDates.forEach(dateStr => {
+                html += `<option value="${dateStr}">${formatDateForDisplay(dateStr)}</option>`;
+            });
+            html += '</select>';
+            html += '</div>';
+        }
+        container.innerHTML = html;
+    };
+
+    function getAllSelectedDates() {
+        let allDates = [];
+        if (calendars['1Visit'].dates.length > 0) allDates = allDates.concat(calendars['1Visit'].dates);
+        if (calendars['2Visits'].dates.length > 0) allDates = allDates.concat(calendars['2Visits'].dates);
+        if (calendars['3Visits'].dates.length > 0) allDates = allDates.concat(calendars['3Visits'].dates);
+        return [...new Set(allDates)].sort();
+    }
+
+    function formatDateForDisplay(dateStr) {
+        const date = new Date(dateStr + 'T00:00:00');
+        return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+    }
+
+    function handlePaymentMethod() {
+        const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
+        const cashNotice = document.getElementById('cashPaymentNotice');
+        const billPayLink = document.getElementById('onlineBillPayLink');
+        const cashappVenmoInfo = document.getElementById('cashappVenmoInfo');
+        
+        cashNotice.style.display = 'none';
+        billPayLink.style.display = 'none';
+        cashappVenmoInfo.style.display = 'none';
+        
+        if (paymentMethod) {
+            if (paymentMethod.value === 'cash') {
+                cashNotice.style.display = 'block';
+            } else if (paymentMethod.value === 'online-bill-pay') {
+                billPayLink.style.display = 'block';
+            } else if (paymentMethod.value === 'cashapp-venmo') {
+                cashappVenmoInfo.style.display = 'block';
+            }
+        }
+    }
+
+    function handleReferralSource() {
+        const referralSource = document.getElementById('referralSource').value;
+        const referralNameField = document.getElementById('referralNameField');
+        
+        if (referralSource === 'Friend/Family') {
+            referralNameField.style.display = 'block';
+        } else {
+            referralNameField.style.display = 'none';
+            document.getElementById('referralFirstName').value = '';
+            document.getElementById('referralLastInitial').value = '';
+        }
+    }
+    // ADD THIS AFTER part4-javascript-closing.html
+
+    function generateBookingSummary() {
+        const summaryDiv = document.getElementById('summaryContent');
+        let html = '';
+        
+        const clientStatus = document.querySelector('input[name="clientStatus"]:checked');
+        const newClientOption = document.querySelector('input[name="newClientOption"]:checked');
+        const bookAfter = document.querySelector('input[name="bookAfterMeetGreet"]:checked');
+        
+        const isMeetGreetOnly = clientStatus && clientStatus.value === 'new' && 
+                                newClientOption && newClientOption.value === 'meet-greet' && 
+                                bookAfter && bookAfter.value === 'no';
+        
+        if (isMeetGreetOnly) {
+            html += '<div style="text-align: center; margin-bottom: 35px; padding-bottom: 25px; border-bottom: 2px solid #E8D5D8;">';
+            html += '<h3 style="font-family: \'Cormorant Unicase\', serif; color: #C8A2A9; font-size: 1.9em; margin-bottom: 12px;">Your Meet & Greet Request</h3>';
+            html += '<p style="color: #6B5953; font-size: 1em; margin: 0;">Please review your information before submitting</p>';
+            html += '</div>';
+            
+            html += '<div style="margin-bottom: 35px;">';
+            html += '<h4 style="font-family: \'Cormorant Unicase\', serif; color: #C8A2A9; font-size: 1.4em; margin-bottom: 18px; border-bottom: 2px solid #E8D5D8; padding-bottom: 10px;">Meet & Greet Details</h4>';
+            html += '<div style="background: linear-gradient(135deg, #F5EFE7 0%, #FAF7F5 100%); padding: 22px; border-radius: 8px; border: 1px solid #E8D5D8;">';
+            
+            html += '<div style="display: flex; justify-content: space-between; margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px solid #F5EFE7;">';
+            html += '<span><strong>Service Type:</strong></span>';
+            html += '<span style="color: #81C784; font-weight: 600;">FREE Meet & Greet</span>';
+            html += '</div>';
+            
+            const meetGreetTimes = document.getElementById('meetGreetTimes').value;
+            if (meetGreetTimes) {
+                html += '<div style="margin-bottom: 14px;">';
+                html += '<strong style="display: block; margin-bottom: 8px; color: #C8A2A9;">Available Times:</strong>';
+                html += '<div style="padding: 12px; background: rgba(181, 145, 151, 0.05); border-radius: 6px; white-space: pre-wrap;">' + meetGreetTimes + '</div>';
+                html += '</div>';
+            }
+            
+            const meetGreetAttendees = document.getElementById('meetGreetAttendees').value;
+            if (meetGreetAttendees) {
+                html += '<div style="margin-bottom: 14px;">';
+                html += '<strong style="display: block; margin-bottom: 8px; color: #C8A2A9;">Who to Expect:</strong>';
+                html += '<div style="padding: 12px; background: rgba(181, 145, 151, 0.05); border-radius: 6px; white-space: pre-wrap;">' + meetGreetAttendees + '</div>';
+                html += '</div>';
+            }
+            
+            const meetGreetNotes = document.getElementById('meetGreetNotes').value;
+            if (meetGreetNotes) {
+                html += '<div style="margin-bottom: 0;">';
+                html += '<strong style="display: block; margin-bottom: 8px; color: #C8A2A9;">Special Notes:</strong>';
+                html += '<div style="padding: 12px; background: rgba(181, 145, 151, 0.05); border-radius: 6px; white-space: pre-wrap;">' + meetGreetNotes + '</div>';
+                html += '</div>';
+            }
+            
+            html += '</div>';
+            html += '</div>';
+            
+            html += '<div style="margin-top: 30px; padding: 22px; background: #E8F5E9; border: 2px solid #81C784; border-radius: 10px;">';
+            html += '<p style="margin: 0; font-size: 1.02em; color: #1B5E20; line-height: 1.75;"><strong>What\'s Next:</strong> We\'ll review your availability and contact you within 24 hours to schedule your free meet & greet. No commitment required!</p>';
+            html += '</div>';
+            
+            summaryDiv.innerHTML = html;
+            document.getElementById('bookingSummary').style.display = 'block';
+            return;
+        }
+        
+        html += '<div style="text-align: center; margin-bottom: 35px; padding-bottom: 25px; border-bottom: 2px solid #E8D5D8;">';
+        html += '<h3 style="font-family: \'Cormorant Unicase\', serif; color: #C8A2A9; font-size: 1.9em; margin-bottom: 12px;">Your Booking Summary</h3>';
+        html += '<p style="color: #6B5953; font-size: 1em; margin: 0;">Review your service details and pricing below</p>';
+        html += '</div>';
+        
+        const primaryService = document.getElementById('primaryService');
+        const duration = document.getElementById('duration');
+        const bookingType = document.getElementById('bookingType').value;
+        const numDogs = parseInt(document.getElementById('numDogs').value) || 0;
+        
+        let addOnCleaning = false;
+        
+        if (bookingType === 'single') {
+            addOnCleaning = document.getElementById('addOnCleaning')?.checked || false;
+        } else if (bookingType === 'multiple') {
+            addOnCleaning = document.getElementById('addOnCleaningMultiple')?.checked || false;
+        }
+        
+        const isNewClientDiscount = clientStatus && clientStatus.value === 'new' && 
+                                   newClientOption && newClientOption.value === '10-percent-off';
+        
+        let serviceCost = 0;
+        let isWeeklyRefresh = false;
+        let primaryServiceText = '';
+        let totalServices = 0;
+        
+        if (primaryService.value) {
+            primaryServiceText = primaryService.options[primaryService.selectedIndex].text;
+            
+            if (primaryService.value === 'weekly-refresh') {
+                serviceCost = PRICING.WEEKLY_REFRESH;
+                isWeeklyRefresh = true;
+            } else if (primaryService.value === 'stand-alone-pet-reset-cleaning') {
+                serviceCost = PRICING.CLEANING_STANDALONE;
+            } else if (primaryService.value === 'drop-in-pet-visit') {
+                if (duration.value) {
+                    switch(duration.value) {
+                        case '30min': serviceCost = PRICING.VISIT_30MIN; break;
+                        case '1hr': serviceCost = PRICING.VISIT_1HR; break;
+                        case '90min': serviceCost = PRICING.VISIT_90MIN; break;
+                        case '2hr': serviceCost = PRICING.VISIT_2HR; break;
+                    }
+                }
+            }
+        }
+        
+        if (bookingType === 'single') {
+            const visitCount = document.getElementById('singleVisitCount').value;
+            if (isWeeklyRefresh) {
+                totalServices = 1;
+            } else if (visitCount) {
+                totalServices = parseInt(visitCount) >= 4 ? 4 : parseInt(visitCount);
+            } else {
+                totalServices = 1;
+            }
+        } else if (bookingType === 'multiple') {
+            totalServices = calendars['1Visit'].dates.length + 
+                           (calendars['2Visits'].dates.length * 2) + 
+                           (calendars['3Visits'].dates.length * 3);
+        }
+        
+        if (addOnCleaning) {
+            if (bookingType === 'multiple') {
+                const cleaningCount = parseInt(document.getElementById('cleaningCount')?.value || 0);
+                totalServices += cleaningCount;
+            } else {
+                totalServices += 1;
+            }
+        }
+        
+        html += '<div style="margin-bottom: 35px;" class="service-overview-section">';
+        html += '<h4 style="font-family: \'Cormorant Unicase\', serif; color: #C8A2A9; font-size: 1.4em; margin-bottom: 18px; border-bottom: 2px solid #E8D5D8; padding-bottom: 10px;">Service Overview</h4>';
+        html += '<div style="background: linear-gradient(135deg, #F5EFE7 0%, #FAF7F5 100%); padding: 20px 18px; border-radius: 8px; border: 1px solid #E8D5D8;">';
+        
+        if (clientStatus && clientStatus.value === 'new' && newClientOption && newClientOption.value === 'meet-greet') {
+            const bookAfterYes = document.querySelector('input[name="bookAfterMeetGreet"]:checked');
+            if (bookAfterYes && bookAfterYes.value === 'yes') {
+                html += '<div style="display: flex; justify-content: space-between; gap: 15px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #F5EFE7;">';
+                html += '<span style="flex: 1;"><strong>Meet & Greet:</strong></span>';
+                html += '<span style="color: #81C784; font-weight: 600; flex-shrink: 0;">FREE (included)</span>';
+                html += '</div>';
+            }
+        }
+        
+        html += '<div style="display: flex; justify-content: space-between; gap: 15px; margin-bottom: 16px;">';
+        html += '<span style="flex: 1;"><strong>Primary Service:</strong></span>';
+        let serviceDisplay = primaryServiceText;
+        if (primaryService.value === 'drop-in-pet-visit') {
+            if (duration.value) {
+                const durationText = duration.options[duration.selectedIndex].text;
+                serviceDisplay = 'Drop-in Pet Visit (' + durationText + ')';
+            }
+        }
+        html += '<span style="flex-shrink: 0; text-align: right;">' + serviceDisplay + '</span>';
+        html += '</div>';
+        
+        html += '<div style="display: flex; justify-content: space-between; gap: 15px; margin-bottom: 16px;">';
+        html += '<span style="flex: 1;"><strong>Booking Type:</strong></span>';
+        const bookingTypeText = bookingType === 'single' ? 'Single Day' : 'Multiple Days/Vacation Coverage';
+        html += '<span style="flex-shrink: 0; text-align: right;">' + bookingTypeText + '</span>';
+        html += '</div>';
+        
+        if (addOnCleaning) {
+            html += '<div style="display: flex; justify-content: space-between; gap: 15px; margin-bottom: 16px;">';
+            html += '<span style="flex: 1;"><strong>Add-On:</strong></span>';
+            html += '<span style="flex-shrink: 0; text-align: right;">Pet Reset Cleaning</span>';
+            html += '</div>';
+        }
+        
+        if (totalServices > 0) {
+            html += '<div style="display: flex; justify-content: space-between; gap: 15px; color: #6B5D58; margin: 0;">';
+            html += '<span style="flex: 1;"><strong>Total Services:</strong></span>';
+            html += '<span style="flex-shrink: 0; text-align: right;">' + totalServices + ' service' + (totalServices > 1 ? 's' : '') + '</span>';
+            html += '</div>';
+        }
+        
+        html += '</div>';
+        html += '</div>';
+        
+        html += '<div style="text-align: center; margin-bottom: 25px;">';
+        html += '<h4 style="font-family: \'Cormorant Unicase\', serif; color: #C8A2A9; font-size: 1.4em; margin-bottom: 8px;">Pricing Breakdown</h4>';
+        html += '<p style="color: #6B5953; font-size: 0.95em; margin: 0;">Click to view detailed pricing</p>';
+        html += '</div>';
+        
+        let primaryServiceCount = totalServices;
+        
+        if (addOnCleaning) {
+            if (bookingType === 'multiple') {
+                primaryServiceCount -= parseInt(document.getElementById('cleaningCount')?.value || 0);
+            } else {
+                primaryServiceCount -= 1;
+            }
+        }
+        
+        let primaryServiceTotal = serviceCost * primaryServiceCount;
+        
+        let additionalDogFee = 0;
+        if (numDogs > 2 && primaryService.value === 'drop-in-pet-visit') {
+            const extraDogs = numDogs - 2;
+            additionalDogFee = extraDogs * PRICING.ADDITIONAL_DOG * primaryServiceCount;
+        }
+        
+        let cleaningTotal = 0;
+        let firstDayAddOnDiscount = 0;
+        
+        if (addOnCleaning) {
+            if (bookingType === 'multiple') {
+                const cleaningCount = parseInt(document.getElementById('cleaningCount')?.value || 0);
+                cleaningTotal = cleaningCount * PRICING.CLEANING_ADDON;
+                
+                if (isNewClientDiscount && !isWeeklyRefresh) {
+                    const allDates = getAllSelectedDates();
+                    if (allDates.length > 0) {
+                        const firstDate = allDates[0];
+                        let firstDayCleanings = 0;
+                        for (let i = 1; i <= cleaningCount; i++) {
+                            const cleaningDate = document.getElementById('cleaningDate' + i)?.value;
+                            if (cleaningDate === firstDate) {
+                                firstDayCleanings++;
+                            }
+                        }
+                        if (firstDayCleanings > 0) {
+                            firstDayAddOnDiscount += (firstDayCleanings * PRICING.CLEANING_ADDON) * PRICING.NEW_CLIENT_DISCOUNT;
+                        }
+                    }
+                }
+            } else {
+                cleaningTotal = PRICING.CLEANING_ADDON;
+            }
+        }
+        
+        let subtotal = primaryServiceTotal + additionalDogFee + cleaningTotal;
+        
+        let firstDayAddOnTotal = 0;
+        if (isNewClientDiscount && !isWeeklyRefresh) {
+            const firstDayCleaning = document.getElementById('firstDayCleaning')?.checked || false;
+            
+            if (firstDayCleaning) {
+                firstDayAddOnTotal += PRICING.CLEANING_ADDON;
+            }
+            
+            subtotal += firstDayAddOnTotal;
+        }
+        
+        let multiServiceDiscount = 0;
+        if (totalServices >= 5 && !isWeeklyRefresh) {
+            multiServiceDiscount = subtotal * PRICING.MULTI_SERVICE_DISCOUNT;
+        }
+        
+        let newClientDiscount = 0;
+        if (isNewClientDiscount && !isWeeklyRefresh) {
+            let firstDayDogFee = 0;
+            if (primaryServiceCount > 0 && additionalDogFee > 0) {
+                firstDayDogFee = additionalDogFee / primaryServiceCount;
+            }
+            const firstDayServiceCost = serviceCost + firstDayDogFee + firstDayAddOnTotal;
+            newClientDiscount = firstDayServiceCost * PRICING.NEW_CLIENT_DISCOUNT;
+            newClientDiscount += firstDayAddOnDiscount;
+        }
+        
+        let totalDiscount = multiServiceDiscount + newClientDiscount;
+        
+        let afterDiscount = subtotal - totalDiscount;
+        let stateTax = afterDiscount * PRICING.STATE_TAX_RATE;
+        let total = afterDiscount + stateTax;
+        
+        html += '<div class="summary-section">';
+        html += '<div class="summary-header" id="pricing-header" onclick="toggleSummarySection(\'pricing\')">';
+        html += '<div class="summary-total">';
+        html += '<span class="summary-total-label">Estimated Total</span>';
+        html += '<span class="summary-total-amount' + (isNewClientDiscount && !isWeeklyRefresh ? ' discount' : '') + '">$' + total.toFixed(2) + '</span>';
+        html += '</div>';
+        html += '<span class="expand-icon">▼</span>';
+        html += '</div>';
+        html += '<div class="summary-details" id="pricing-details">';
+        
+        const baseServiceCost = serviceCost;
+        
+        html += '<div class="detail-row">';
+        html += '<span>' + primaryServiceCount + ' service' + (primaryServiceCount > 1 ? 's' : '') + ' × $' + baseServiceCost.toFixed(2) + '</span>';
+        html += '<span>$' + primaryServiceTotal.toFixed(2) + '</span>';
+        html += '</div>';
+        
+        if (additionalDogFee > 0) {
+            html += '<div class="detail-row">';
+            html += '<span>Additional Dog Fee</span>';
+            html += '<span>+$' + additionalDogFee.toFixed(2) + '</span>';
+            html += '</div>';
+        }
+        
+        if (cleaningTotal > 0) {
+            const cleaningCount = bookingType === 'multiple' ? parseInt(document.getElementById('cleaningCount')?.value || 0) : 1;
+            html += '<div class="detail-row">';
+            html += '<span>' + cleaningCount + ' Pet Reset Cleaning' + (cleaningCount > 1 ? 's' : '') + '</span>';
+            html += '<span>+$' + cleaningTotal.toFixed(2) + '</span>';
+            html += '</div>';
+        }
+        
+        if (firstDayAddOnTotal > 0) {
+            html += '<div class="detail-row">';
+            html += '<span>First Day Pet Reset Cleaning</span>';
+            html += '<span>+$' + firstDayAddOnTotal.toFixed(2) + '</span>';
+            html += '</div>';
+        }
+        
+        html += '<div class="detail-row subtotal">';
+        html += '<span>Subtotal</span>';
+        html += '<span>$' + subtotal.toFixed(2) + '</span>';
+        html += '</div>';
+        
+        if (totalDiscount > 0) {
+            if (multiServiceDiscount > 0) {
+                html += '<div class="detail-row" style="color: #2E7D32; font-weight: 600;">';
+                html += '<span>Multi-Service Discount</span>';
+                html += '<span>-$' + multiServiceDiscount.toFixed(2) + '</span>';
+                html += '</div>';
+            }
+            
+            if (newClientDiscount > 0) {
+                html += '<div class="detail-row" style="color: #2E7D32; font-weight: 600;">';
+                html += '<span>New Client Discount</span>';
+                html += '<span>-$' + newClientDiscount.toFixed(2) + '</span>';
+                html += '</div>';
+            }
+        }
+        
+        html += '<div class="detail-row">';
+        html += '<span>State Tax (6%)</span>';
+        html += '<span>+$' + stateTax.toFixed(2) + '</span>';
+        html += '</div>';
+        
+        html += '</div>';
+        html += '</div>';
+        
+        html += '<div style="margin-top: 30px; padding: 22px; background: #E8F5E9; border: 2px solid #81C784; border-radius: 10px;">';
+        html += '<p style="margin: 0 0 12px 0; font-size: 1.1em; color: #1B5E20; font-weight: 600;">Please note:</p>';
+        html += '<ul style="margin: 0; padding-left: 20px; color: #1B5E20; line-height: 1.85;">';
+        html += '<li style="margin-bottom: 8px;">Final pricing may include a small travel fee based on your location.</li>';
+        html += '<li style="margin-bottom: 8px;">All estimated quotes are reviewed by our team for accuracy prior to confirming your booking request.</li>';
+        html += '<li style="margin-bottom: 0;">All details and exact pricing will be confirmed before your services begin - no surprises!</li>';
+        html += '</ul>';
+        html += '</div>';
+        
+        summaryDiv.innerHTML = html;
+        document.getElementById('bookingSummary').style.display = 'block';
+    }
+
+    document.getElementById('bookingForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        
+        if (!validateCurrentStep()) {
+            return;
+        }
+        
+        const submitBtn = event.submitter;
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = 'Submitting...';
+        submitBtn.disabled = true;
+        
+        const formData = new FormData(this);
+        
+        fetch('https://formspree.io/f/xgvnbrgd', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                document.getElementById('bookingFormContainer').style.display = 'none';
+                document.getElementById('validationErrors').style.display = 'none';
+                document.querySelector('.progress-container').style.display = 'none';
+                
+                document.getElementById('successMessage').style.display = 'block';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else {
+                throw new Error('Form submission failed');
+            }
+        })
+        .catch(error => {
+            console.error('Submission error:', error);
+            alert('There was an error submitting your request. Please try again or call us at (859) 346-0605');
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
+        });
+    });
+</script>
+
+</body>
+</html>
